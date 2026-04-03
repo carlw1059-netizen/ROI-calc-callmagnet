@@ -105,11 +105,11 @@
       resultsArea.innerHTML = '<div class="zero-state"><div class="zero-icon">📲</div><p>Enter their numbers above<br>to see the revenue<br>they\'re leaving behind.</p></div>';
       return;
     }
-    const repliesPerWeek = missed * SMS_REPLY_RATE;
-    const bookingsPerWeek = repliesPerWeek * BOOKING_RATE;
+    const repliesPerWeek = Math.round(missed * SMS_REPLY_RATE);
+    const bookingsPerWeek = Math.round(repliesPerWeek * BOOKING_RATE);
     const revenuePerWeek = bookingsPerWeek * spend;
-    const revenuePerMonth = revenuePerWeek * 4.33;
-    const revenuePerYear = revenuePerWeek * 52;
+    const revenuePerMonth = Math.round(revenuePerWeek * 4.33);
+    const revenuePerYear = Math.round(revenuePerWeek * 52);
     const breakEven = Math.ceil(99 / spend);
     resultsArea.innerHTML = `
       <div class="funnel">
@@ -121,12 +121,12 @@
         <div class="funnel-arrow">↓</div>
         <div class="funnel-step">
           <div class="funnel-left"><div class="f-label">SMS REPLIES</div><div class="f-desc">customers respond</div></div>
-          <div class="f-val">${repliesPerWeek.toFixed(1)}/wk</div>
+          <div class="f-val">${repliesPerWeek}/wk</div>
         </div>
         <div class="funnel-arrow">↓</div>
         <div class="funnel-step">
           <div class="funnel-left"><div class="f-label">BOOKINGS MADE</div><div class="f-desc">back in the chair</div></div>
-          <div class="f-val">${bookingsPerWeek.toFixed(1)}/wk</div>
+          <div class="f-val">${bookingsPerWeek}/wk</div>
         </div>
       </div>
       <div class="spacer"></div>
@@ -138,7 +138,7 @@
       <div class="revenue-card">
         <div class="stat-label">ESTIMATED REVENUE RECOVERED</div>
         <div class="stat-val">${fmt(revenuePerYear)}</div>
-        <div class="stat-sub">${bookingsPerWeek.toFixed(1)} bookings/wk × ${fmt(spend)} avg × 52 weeks</div>
+        <div class="stat-sub">${bookingsPerWeek} bookings/wk × ${fmt(spend)} avg × 52 weeks</div>
       </div>
       <div class="spacer"></div>
       <div class="breakeven-card">
