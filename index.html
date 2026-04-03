@@ -44,10 +44,10 @@
   .stat-sub { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
   .revenue-card { background: var(--teal-dim); border: 1px solid var(--teal); border-radius: 12px; padding: 18px 20px; }
   .revenue-card .stat-label { color: var(--teal); }
-  .revenue-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
-  .revenue-card .stat-val { font-size: 48px; color: var(--teal); line-height: 1; }
-  .roi-pill { font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700; color: #1a1a1a; background: var(--teal); border-radius: 8px; padding: 6px 12px; white-space: nowrap; align-self: center; }
-  .revenue-card .stat-sub { color: rgba(78,203,160,0.65); font-size: 12px; margin-top: 8px; }
+  .revenue-main { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  .revenue-dollar { font-family: 'Space Mono', monospace; font-size: 36px; font-weight: 700; color: var(--teal); line-height: 1; }
+  .revenue-roi { font-family: 'Space Mono', monospace; font-size: 30px; font-weight: 700; color: var(--teal); line-height: 1; opacity: 0.75; }
+  .revenue-card .stat-sub { color: rgba(78,203,160,0.65); font-size: 12px; margin-top: 10px; }
   .breakeven-card { background: var(--orange-dim); border: 1px solid var(--orange); border-radius: 12px; padding: 14px 18px; font-family: 'Space Mono', monospace; font-size: 12px; color: var(--orange); line-height: 1.8; }
   .breakeven-card strong { color: var(--white); }
   .zero-state { background: var(--card); border: 1px solid var(--card-border); border-radius: 12px; padding: 36px 20px; text-align: center; }
@@ -141,9 +141,9 @@
       <div class="spacer"></div>
       <div class="revenue-card">
         <div class="stat-label">ESTIMATED REVENUE RECOVERED</div>
-        <div class="revenue-top">
-          <div class="stat-val">${fmt(revenuePerYear)}</div>
-          <div class="roi-pill">${roiPercent}% ROI</div>
+        <div class="revenue-main">
+          <div class="revenue-dollar">${fmt(revenuePerYear)}</div>
+          <div class="revenue-roi">${roiPercent}% ROI</div>
         </div>
         <div class="stat-sub">${bookingsPerWeek} bookings/wk × ${fmt(spend)} avg × 52 weeks</div>
       </div>
