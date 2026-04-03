@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>CallMagnet ROI</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #3a3a3a; --card: #4a4a4a; --card-border: #5a5a5a;
+    --teal: #4ecba0; --teal-dark: #3aad85; --teal-dim: rgba(78,203,160,0.15);
+    --orange: #e8a020; --orange-dim: rgba(232,160,32,0.15);
+    --white: #f0f0f0; --muted: rgba(78,203,160,0.6); --text-dim: rgba(240,240,240,0.5);
+  }
+  html, body { min-height: 100vh; background: var(--bg); color: var(--white); font-family: 'Inter', sans-serif; }
+  .header { padding: 18px 20px 14px; border-bottom: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; }
+  .logo-row { display: flex; align-items: center; gap: 8px; }
+  .star { color: var(--teal); font-size: 14px; }
+  .logo { font-family: 'Space Mono', monospace; font-size: 17px; font-weight: 700; color: var(--teal); letter-spacing: 1px; }
+  .roi-badge { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--teal); border: 1px solid var(--teal); border-radius: 6px; padding: 4px 10px; }
+  .biz-row { padding: 20px 20px 0; }
+  .biz-name { font-size: 26px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+  .biz-sub { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--teal); letter-spacing: 1px; }
+  .main { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+  .card { background: var(--card); border: 1px solid var(--card-border); border-radius: 12px; padding: 16px 18px; }
+  .card-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 10px; }
+  .input-wrap { display: flex; align-items: center; gap: 6px; }
+  .prefix { font-family: 'Space Mono', monospace; font-size: 28px; color: var(--teal); opacity: 0.4; line-height: 1; }
+  .card input[type="number"] { background: transparent; border: none; outline: none; font-family: 'Space Mono', monospace; font-size: 42px; font-weight: 700; color: var(--teal); width: 100%; -webkit-appearance: none; }
+  .card input[type="number"]::placeholder { color: rgba(78,203,160,0.2); }
+  .funnel { background: var(--card); border: 1px solid var(--card-border); border-radius: 12px; padding: 16px 18px; }
+  .funnel-step { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--card-border); }
+  .funnel-step:last-child { border-bottom: none; }
+  .funnel-left { display: flex; flex-direction: column; gap: 3px; }
+  .f-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--muted); }
+  .f-desc { font-size: 12px; color: var(--text-dim); }
+  .f-val { font-family: 'Space Mono', monospace; font-size: 24px; font-weight: 700; color: var(--teal); }
+  .funnel-arrow { text-align: center; color: var(--muted); font-size: 16px; padding: 3px 0; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .stat-card { background: var(--card); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px 16px; }
+  .stat-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--muted); margin-bottom: 6px; }
+  .stat-val { font-family: 'Space Mono', monospace; font-size: 22px; font-weight: 700; color: var(--teal); }
+  .stat-sub { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+  .revenue-card { background: var(--teal-dim); border: 1px solid var(--teal); border-radius: 12px; padding: 18px 20px; }
+  .revenue-card .stat-label { color: var(--teal); }
+  .revenue-card .stat-val { font-size: 48px; color: var(--teal); }
+  .revenue-card .stat-sub { color: rgba(78,203,160,0.65); font-size: 12px; margin-top: 6px; }
+  .breakeven-card { background: var(--orange-dim); border: 1px solid var(--orange); border-radius: 12px; padding: 14px 18px; font-family: 'Space Mono', monospace; font-size: 12px; color: var(--orange); line-height: 1.8; }
+  .breakeven-card strong { color: var(--white); }
+  .zero-state { background: var(--card); border: 1px solid var(--card-border); border-radius: 12px; padding: 36px 20px; text-align: center; }
+  .zero-icon { font-size: 36px; margin-bottom: 12px; }
+  .zero-state p { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--muted); line-height: 1.9; }
+  .spacer { height: 4px; }
+  .pb { height: 44px; }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo-row">
+    <span class="star">★</span>
+    <span class="logo">CALLMAGNET</span>
+  </div>
+  <div class="roi-badge">ROI CALC</div>
+</div>
+<div class="biz-row">
+  <div class="biz-name">Your Shop</div>
+  <div class="biz-sub">PULL EVERY CUSTOMER BACK.</div>
+</div>
+<div class="main">
+  <div class="card">
+    <div class="card-label">AVG SPEND PER CLIENT</div>
+    <div class="input-wrap">
+      <span class="prefix">$</span>
+      <input type="number" id="avgSpend" placeholder="65" inputmode="numeric" min="1" max="9999" />
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-label">MISSED CALLS PER WEEK</div>
+    <div class="input-wrap">
+      <input type="number" id="missedCalls" placeholder="5" inputmode="numeric" min="1" max="999" style="font-size:42px;" />
+    </div>
+  </div>
+  <div id="resultsArea">
+    <div class="zero-state">
+      <div class="zero-icon">📲</div>
+      <p>Enter their numbers above<br>to see the revenue<br>they're leaving behind.</p>
+    </div>
+  </div>
+  <div class="pb"></div>
+</div>
+<script>
+  const SMS_REPLY_RATE = 0.70;
+  const BOOKING_RATE = 0.55;
+  const avgSpendEl = document.getElementById('avgSpend');
+  const missedEl = document.getElementById('missedCalls');
+  const resultsArea = document.getElementById('resultsArea');
+  function fmt(n) { return '$' + Math.round(n).toLocaleString('en-AU'); }
+  avgSpendEl.addEventListener('input', calc);
+  missedEl.addEventListener('input', calc);
+  function calc() {
+    const spend = parseFloat(avgSpendEl.value);
+    const missed = parseFloat(missedEl.value);
+    if (!spend || spend <= 0 || !missed || missed <= 0) {
+      resultsArea.innerHTML = '<div class="zero-state"><div class="zero-icon">📲</div><p>Enter their numbers above<br>to see the revenue<br>they\'re leaving behind.</p></div>';
+      return;
+    }
+    const repliesPerWeek = missed * SMS_REPLY_RATE;
+    const bookingsPerWeek = repliesPerWeek * BOOKING_RATE;
+    const revenuePerWeek = bookingsPerWeek * spend;
+    const revenuePerMonth = revenuePerWeek * 4.33;
+    const revenuePerYear = revenuePerWeek * 52;
+    const breakEven = Math.ceil(99 / spend);
+    resultsArea.innerHTML = `
+      <div class="funnel">
+        <div class="card-label">WHAT HAPPENS TO THOSE CALLS</div>
+        <div class="funnel-step">
+          <div class="funnel-left"><div class="f-label">MISSED CALLS</div><div class="f-desc">SMS fires automatically</div></div>
+          <div class="f-val">${missed}/wk</div>
+        </div>
+        <div class="funnel-arrow">↓</div>
+        <div class="funnel-step">
+          <div class="funnel-left"><div class="f-label">SMS REPLIES</div><div class="f-desc">customers respond</div></div>
+          <div class="f-val">${repliesPerWeek.toFixed(1)}/wk</div>
+        </div>
+        <div class="funnel-arrow">↓</div>
+        <div class="funnel-step">
+          <div class="funnel-left"><div class="f-label">BOOKINGS MADE</div><div class="f-desc">back in the chair</div></div>
+          <div class="f-val">${bookingsPerWeek.toFixed(1)}/wk</div>
+        </div>
+      </div>
+      <div class="spacer"></div>
+      <div class="grid-2">
+        <div class="stat-card"><div class="stat-label">PER WEEK</div><div class="stat-val">${fmt(revenuePerWeek)}</div><div class="stat-sub">recovered</div></div>
+        <div class="stat-card"><div class="stat-label">PER MONTH</div><div class="stat-val">${fmt(revenuePerMonth)}</div><div class="stat-sub">recovered</div></div>
+      </div>
+      <div class="spacer"></div>
+      <div class="revenue-card">
+        <div class="stat-label">ESTIMATED REVENUE RECOVERED</div>
+        <div class="stat-val">${fmt(revenuePerYear)}</div>
+        <div class="stat-sub">${bookingsPerWeek.toFixed(1)} bookings/wk × ${fmt(spend)} avg × 52 weeks</div>
+      </div>
+      <div class="spacer"></div>
+      <div class="breakeven-card">
+        At <strong>$99/month</strong>, CallMagnet pays for itself after just <strong>${breakEven} recovered booking${breakEven === 1 ? '' : 's'}.</strong> Everything after that is yours.
+      </div>`;
+  }
+  calc();
+</script>
+</body>
+</html>
+
