@@ -11,6 +11,7 @@
     --bg: #3a3a3a; --card: #4a4a4a; --card-border: #5a5a5a;
     --teal: #4ecba0; --teal-dark: #3aad85; --teal-dim: rgba(78,203,160,0.15);
     --orange: #e8a020; --orange-dim: rgba(232,160,32,0.15);
+    --red: #e05555; --red-dim: rgba(224,85,85,0.15);
     --white: #f0f0f0; --muted: rgba(78,203,160,0.6); --text-dim: rgba(240,240,240,0.5);
   }
   html, body { min-height: 100vh; background: var(--bg); color: var(--white); font-family: 'Inter', sans-serif; }
@@ -36,7 +37,6 @@
   .f-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--muted); }
   .f-desc { font-size: 12px; color: var(--text-dim); }
   .f-val { font-family: 'Space Mono', monospace; font-size: 24px; font-weight: 700; color: var(--teal); }
-  .funnel-arrow { text-align: center; color: var(--muted); font-size: 16px; padding: 3px 0; }
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .stat-card { background: var(--card); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px 16px; }
   .stat-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--muted); margin-bottom: 6px; }
@@ -44,10 +44,16 @@
   .stat-sub { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
   .revenue-card { background: var(--teal-dim); border: 1px solid var(--teal); border-radius: 12px; padding: 18px 20px; }
   .revenue-card .stat-label { color: var(--teal); }
-  .revenue-main { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  .revenue-main { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   .revenue-dollar { font-family: 'Space Mono', monospace; font-size: 36px; font-weight: 700; color: var(--teal); line-height: 1; }
   .revenue-roi { font-family: 'Space Mono', monospace; font-size: 30px; font-weight: 700; color: var(--teal); line-height: 1; opacity: 0.75; }
   .revenue-card .stat-sub { color: rgba(78,203,160,0.65); font-size: 12px; margin-top: 10px; }
+  .ad-card { background: var(--red-dim); border: 1px solid var(--red); border-radius: 12px; padding: 18px 20px; }
+  .ad-card .stat-label { color: var(--red); }
+  .ad-main { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .ad-dollar { font-family: 'Space Mono', monospace; font-size: 36px; font-weight: 700; color: var(--red); line-height: 1; }
+  .ad-pct { font-family: 'Space Mono', monospace; font-size: 30px; font-weight: 700; color: var(--red); line-height: 1; opacity: 0.75; }
+  .ad-card .stat-sub { color: rgba(224,85,85,0.65); font-size: 12px; margin-top: 10px; }
   .breakeven-card { background: var(--orange-dim); border: 1px solid var(--orange); border-radius: 12px; padding: 14px 18px; font-family: 'Space Mono', monospace; font-size: 12px; color: var(--orange); line-height: 1.8; }
   .breakeven-card strong { color: var(--white); }
   .zero-state { background: var(--card); border: 1px solid var(--card-border); border-radius: 12px; padding: 36px 20px; text-align: center; }
@@ -55,6 +61,7 @@
   .zero-state p { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--muted); line-height: 1.9; }
   .spacer { height: 4px; }
   .pb { height: 44px; }
+  .section-divider { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--muted); padding: 4px 0; }
 </style>
 </head>
 <body>
@@ -83,6 +90,13 @@
       <input type="number" id="missedCalls" placeholder="5" inputmode="numeric" min="1" max="999" style="font-size:42px;" />
     </div>
   </div>
+  <div class="card">
+    <div class="card-label">MONTHLY AD SPEND (OPTIONAL)</div>
+    <div class="input-wrap">
+      <span class="prefix">$</span>
+      <input type="number" id="adSpend" placeholder="500" inputmode="numeric" min="0" max="99999" />
+    </div>
+  </div>
   <div id="resultsArea">
     <div class="zero-state">
       <div class="zero-icon">📲</div>
@@ -95,15 +109,19 @@
   const SMS_REPLY_RATE = 0.70;
   const BOOKING_RATE = 0.55;
   const ANNUAL_COST = 99 * 12;
+  const MISSED_CALL_RATE = 0.40;
   const avgSpendEl = document.getElementById('avgSpend');
   const missedEl = document.getElementById('missedCalls');
+  const adSpendEl = document.getElementById('adSpend');
   const resultsArea = document.getElementById('resultsArea');
   function fmt(n) { return '$' + Math.round(n).toLocaleString('en-AU'); }
   avgSpendEl.addEventListener('input', calc);
   missedEl.addEventListener('input', calc);
+  adSpendEl.addEventListener('input', calc);
   function calc() {
     const spend = parseFloat(avgSpendEl.value);
     const missed = parseFloat(missedEl.value);
+    const adSpend = parseFloat(adSpendEl.value) || 0;
     if (!spend || spend <= 0 || !missed || missed <= 0) {
       resultsArea.innerHTML = '<div class="zero-state"><div class="zero-icon">📲</div><p>Enter their numbers above<br>to see the revenue<br>they\'re leaving behind.</p></div>';
       return;
@@ -115,6 +133,18 @@
     const revenuePerYear = Math.round(revenuePerWeek * 52);
     const breakEven = Math.ceil(99 / spend);
     const roiPercent = Math.round(((revenuePerYear - ANNUAL_COST) / ANNUAL_COST) * 100);
+    const wastedAdMonth = Math.round(adSpend * MISSED_CALL_RATE);
+    const wastedAdYear = wastedAdMonth * 12;
+    const adBlock = adSpend > 0 ? `
+      <div class="spacer"></div>
+      <div class="ad-card">
+        <div class="stat-label">AD SPEND WASTED ON UNANSWERED CALLS</div>
+        <div class="ad-main">
+          <div class="ad-dollar">${fmt(wastedAdYear)}/yr</div>
+          <div class="ad-pct">${fmt(wastedAdMonth)}/mo</div>
+        </div>
+        <div class="stat-sub">40% of your ${fmt(adSpend)}/mo ad spend is generating calls that go unanswered</div>
+      </div>` : '';
     resultsArea.innerHTML = `
       <div class="funnel">
         <div class="card-label">WHAT HAPPENS TO THOSE CALLS</div>
@@ -122,12 +152,12 @@
           <div class="funnel-left"><div class="f-label">MISSED CALLS</div><div class="f-desc">SMS fires automatically</div></div>
           <div class="f-val">${missed}/wk</div>
         </div>
-        <div class="funnel-arrow">↓</div>
+        <div class="funnel-arrow" style="text-align:center;color:var(--muted);font-size:16px;padding:3px 0;">↓</div>
         <div class="funnel-step">
           <div class="funnel-left"><div class="f-label">SMS REPLIES</div><div class="f-desc">customers respond</div></div>
           <div class="f-val">${repliesPerWeek}/wk</div>
         </div>
-        <div class="funnel-arrow">↓</div>
+        <div class="funnel-arrow" style="text-align:center;color:var(--muted);font-size:16px;padding:3px 0;">↓</div>
         <div class="funnel-step">
           <div class="funnel-left"><div class="f-label">BOOKINGS MADE</div><div class="f-desc">back in the chair</div></div>
           <div class="f-val">${bookingsPerWeek}/wk</div>
@@ -147,6 +177,7 @@
         </div>
         <div class="stat-sub">${bookingsPerWeek} bookings/wk × ${fmt(spend)} avg × 52 weeks</div>
       </div>
+      ${adBlock}
       <div class="spacer"></div>
       <div class="breakeven-card">
         At <strong>$99/month</strong>, CallMagnet pays for itself after just <strong>${breakEven} recovered booking${breakEven === 1 ? '' : 's'}.</strong> Everything after that is yours.
